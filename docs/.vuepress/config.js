@@ -1,4 +1,5 @@
 module.exports = {
+  base: "/Web-Frontend-Interview/",
   theme:"",
   title: "前端面试题大全",
   description: "Web Frontend developer Interview questions",
