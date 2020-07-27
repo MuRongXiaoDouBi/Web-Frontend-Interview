@@ -5,4 +5,5 @@ module.exports = {
   "/vue/": require("../../vue/sidebar_contents"),
   "/react/": require("../../react/sidebar_contents"),
   "/arithmetic/": require("../../arithmetic/sidebar_contents"),
+  "/design-mode/": require("../../design-mode/sidebar_contents"),
 };

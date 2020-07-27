@@ -29,5 +29,9 @@ module.exports = [
   {
     text: "算法",
     link: "/arithmetic/primary.html"
+  },
+  {
+    text: "设计模式",
+    link: "/design-mode/primary.html"
   }
 ];
