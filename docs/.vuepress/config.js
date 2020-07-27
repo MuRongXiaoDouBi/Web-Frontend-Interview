@@ -3,7 +3,6 @@ module.exports = {
   theme:"",
   title: "前端面试题大全",
   description: "Web Frontend developer Interview questions",
-  base: "/",
   head: [
     ["link",{ rel: "icon",href: "/assets/logo.png" }]
   ],
