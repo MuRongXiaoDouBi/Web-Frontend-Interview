@@ -1,10 +1,20 @@
 module.exports = {
   base: "/Web-Frontend-Interview/",
-  theme:"",
+  theme: "",
   title: "前端面试题大全",
   description: "Web Frontend developer Interview questions",
   head: [
-    ["link",{ rel: "icon",href: "/assets/logo.png" }]
+    ["link", {
+      rel: "icon",
+      href: "/assets/logo.png"
+    }]
+  ],
+  plugins: [
+    '@vuepress/back-to-top',
+    ['@vuepress/active-header-links', {
+      sidebarLinkSelector: '.sidebar-link',
+      headerAnchorSelector: '.header-anchor'
+    }],
   ],
   markdown: {
     lineNumbers: false,
