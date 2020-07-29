@@ -2,7 +2,7 @@
 title: 初级
 ---
 [[toc]]
-
+g
 ## 一、Vue的data为什么是函数？
 
 组件中的 `data` 写成一个函数，数据以函数返回值形式定义，这样每复用一次组件，就会返回一份新的 `data` ，类似于**给每个组件实例创建一个私有的数据空间，让各个组件实例维护各自的数据**。而单纯的写成对象形式，就使得所有组件实例共用了一份 `data` ，就会造成一个变了全都会变的结果。
@@ -198,3 +198,146 @@ computed: {
 ## 十、如何实现一个自定义指令？
 
 自定义指令解决的问题无可避免需要操作 `Dom` 时，会更加的方便，一般是使用 `Vue.directive` 方法进行自定义指令的全局注册。注册自定义时接受两个参数，第一个是指令的名称(不加 `v-` )，第二个是一个对象，里面主要是一些指令的钩子函数，如 `bind` (绑定到节点时执行)、 `inserted` (渲染到父节点时执行)、 `update` (指令所在组件更新时)、 `componentUpdated` (所在组件及其子组件更新时)、 `unbind` (解除绑定时)，在这些钩子的内部第一个参数就是指令绑定对应的真实 `Dom` ，第二个参数 `binding` ，指令对应的一些信息或传的参数。在钩子函数里完成对Dom的操作就是自定义指令做的事情。
+
+## 十一、谈谈对vuex的理解？
+
+- `vuex` 是一个全局集中响应式状态的管理工具，状态会保存再 `state` 内，可以被所有组件所引用，一经修改后引用 `state` 内状态的组件都会响应式的更新。`state` 不能被直接修改，必须 `commit` 内提交 `mutation` 才行，且 `mutation` 必须是同步函数。提交 `action` 可以在内部进行异步操作，可同时提交多个 `mutation`。
+- `store` 内的 `state` 可以通过 `this.$store.state.xxx` 访问。
+- `store` 内的 `getter` 可以通过 `this.$store.getters.xxx` 访问。
+- `store` 内的 `mutation` 可以通过 `this.$store.commit('xxx')` 提交。
+- `store` 内的 `action` 可以通过 `this.$store.dispatch('yyy')` 提交。
+
+## 十二、vuex语法糖方法有哪些以及如何使用？
+
+```js
+computed: {
+  ...mapState(['xxx', 'yyy'])
+}
+
+computed: {
+  ...mapGetters(['xxx', 'yyy'])
+}
+
+methods: {
+  ...mapMutations({
+    zzz: 'XXX_YYY'
+  })
+}
+
+methods: {
+  ...mapActions(['yyy'])
+}
+```
+
+## 十三、vue-router如何传递参数？
+
+```js
+// 方式1：
+{
+  path:"/home/:id",
+  component:Home
+}
+this.$router.push({
+  path:`/home/${id}`,
+})
+// 在Home组件中获取参数
+this.$route.params.id
+
+// 方式2：需要命名路由
+{
+  path:'/home',
+  name: 'home'
+  component:Home
+}
+this.$router.push({
+  name:'home',
+  params:{id:9527}
+})
+// 在Home组件中获取参数
+this.$route.params.id
+
+// 方式3：
+{
+  path:"/home",
+  component:Home
+}
+this.$router.push({
+  path:'/home',
+  query:{id:9527}
+})
+
+// 在Home组件中获取参数
+this.$route.query.id
+```
+
+## 十三、vue-router有哪些导航守卫钩子？以及它们的执行顺序？
+
+- 全局守卫：
+  - `beforeEach`：只要当某个导航被触发时，就会执行这个钩子。
+  - `beforeResolve`：在路由的 `beforeEnter` 和组件的 `beforeRouteEnter` 执行之后执行。
+  - `afterEach`：在所有的导航守卫执行完毕之后执行，没有 `next` 方法。
+- 路由守卫：
+  - `beforeEnter`：在路由内定义，在全局 `beforeEach` 之后执行。
+- 组件守卫：
+  - `beforeRouteEnter`：在渲染组件对应路由被确认之前调用，不能访问 `this`，在路由 `beforeEnter` 钩子之后执行。
+  - `beforeRouteUpdate`：在当前路由改变但组件被复用时调用，例如在动态子路由之前调转时。
+  - `beforeRouteLeave`：导航离开该路由时调用。
+
+## 十四、如何实现异步组件？
+
+```js
+// 方式1：
+const Home= () => import('components/home')
+export default new Router({
+  routes: [
+    {
+      path: '/home',
+      component: Home,
+    },
+  ]
+})
+
+// 方式2：可以指定多个路由为相同`chunk`名，会打包在一起
+export default new Router({
+  [{
+    path: '/home',
+    component: r => require.ensure([], () => r(require('../components/home')), 'home' /* chunk名 */)
+  }]
+})
+
+// 方式3：
+export default new Router({
+  [{
+    path: '/promisedemo',
+    component: resolve =>  require(['../components/home'], resolve)
+  }
+]})
+
+// 方式4：高级异步组件，带`loading`和`error`组件
+const Home= () => lazyLoadView(import('components/home'))
+
+export default new Router({
+  routes: [
+    {
+      path: '/home',
+      component: Home,
+    },
+  ]
+})
+
+function lazyLoadView(AsyncView) {
+  const AsyncHandler = () => ({
+    component: AsyncView,
+    loading: require('@/components/loading').default,
+    error: require('@/components/error').default,
+    delay: 200,
+    timeout: 10000
+  });
+  return Promise.resolve({
+    functional: true,
+    render(h, { data, children }) {
+      return h(AsyncHandler, data, children);
+    }
+  });
+}
+```

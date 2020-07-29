@@ -11,3 +11,54 @@ title: 中级
 - 开始组件的挂载阶段，如果是不带编译器版本且需要编译时，这个时候就开始将模板编译 `render` 函数，完毕之后执行 `beforeMount` 钩子。
 - 接下来执行 `render` 函数，得到 `VNode` ，之后执行 `patch` 由内而外的将 `VNode` 转为真实 `Dom` ，完成之后执行 `mounted` 钩子。
 - 如果在 `patch` 的过程中遇到了子组件的 `VNode` ，就会转为去执行子组件的初始化到真实 `Dom` 的状态过程，完毕之后才执行父组件的 `mounted` 钩子。
+
+## 二、请实现一个最小化vue响应式示例？
+
+```js
+class Watcher {
+  update() {
+    console.log('更新~');
+  }
+}
+class Dep {
+  constructor() {
+    this._watchers = new Set();
+  }
+  add(watcher) {
+    if(!this._watchers.has(watcher)) {
+      this._watchers.add(watcher);
+    }
+  }
+  notify() {
+    this._watchers.forEach(watch => {
+      watch.update();
+    })
+  }
+}
+
+Dep.target = new Watcher();
+
+function observer(target) {
+  if (typeof target === 'object' && target !== null) {
+    Object.keys(target).forEach(key => {
+      defineReactive(target, key, target[key]);
+    })
+  }
+}
+function defineReactive(target, key, val) {
+  const dep = new Dep();
+  if (typeof val === 'object' && val !== null) {
+    observer(val);
+  }
+  Object.defineProperty(target, key, {
+    get() {
+      dep.add(Dep.target);
+      return val;
+    },
+    set(newVal) {
+      dep.notify();
+      val = newVal;
+    }
+  })
+}
+```
