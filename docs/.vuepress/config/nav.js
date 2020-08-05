@@ -19,6 +19,10 @@ module.exports = [
     link: "/javascript/primary.html"
   },
   {
+    text: "浏览器",
+    link: "/browser/primary.html"
+  },
+  {
     text: "Vue",
     link: "/vue/primary.html"
   },

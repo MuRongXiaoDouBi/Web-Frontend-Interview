@@ -6,4 +6,5 @@ module.exports = {
   "/react/": require("../../react/sidebar_contents"),
   "/arithmetic/": require("../../arithmetic/sidebar_contents"),
   "/design-mode/": require("../../design-mode/sidebar_contents"),
+  "/browser/": require("../../design-mode/sidebar_contents"),
 };
